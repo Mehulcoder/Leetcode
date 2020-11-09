@@ -1,23 +1,65 @@
 class Solution {
 public:
-	int maxDistance(vector<vector<int>>& g, int steps = 0) {
-		queue<pair<int, int>> q, q1;
-		for (auto i = 0; i < g.size(); ++i)
-			for (auto j = 0; j < g[i].size(); ++j)
-				if (g[i][j] == 1)
-					q.push({ i - 1, j }), q.push({ i + 1, j }), q.push({ i, j - 1 }), q.push({ i, j + 1 });
-		while (!q.empty()) {
-			++steps;
-			while (!q.empty()) {
-				int i = q.front().first, j = q.front().second;
-				q.pop();
-				if (i >= 0 && j >= 0 && i < g.size() && j < g[i].size() && g[i][j] == 0) {
-					g[i][j] = steps;
-					q1.push({ i - 1, j }), q1.push({ i + 1, j }), q1.push({ i, j - 1 }), q1.push({ i, j + 1 });
-				}
-			}
-			swap(q1, q);
-		}
-		return steps == 1 ? -1 : steps - 1;
-	}
+        Solution() {
+                ios::sync_with_stdio(false);
+                cin.tie(NULL);
+                cout.tie(NULL);
+        }
+
+        int dx[4] = { -1, 1, 0, 0};
+        int dy[4] = {0, 0, 1, -1};
+        int maxDistance(vector<vector<int>>& grid) {
+
+                int n = grid.size();
+                int m = grid[0].size();
+                int ans[n][m];
+                bool vis[n][m];
+
+                memset(ans, -1,  sizeof(ans));
+                memset(vis, 0, sizeof(vis));
+
+
+                queue<vector<int>> q;
+                for (int i = 0; i < n; i++) {
+                        for (int j = 0; j < m; j++) {
+                                if (grid[i][j] == 1) {
+                                        q.push({i, j, 0});
+                                        vis[i][j] = 1;
+                                        ans[i][j] = -1;
+                                }
+                        }
+                }
+
+                int anss = -1;
+                while (!q.empty()) {
+                        auto tp = q.front();
+                        q.pop();
+
+                        int i = tp[0];
+                        int j = tp[1];
+                        int dis = tp[2];
+
+                        if (ans[i][j] == -1) {
+                                ans[i][j] = dis;
+                                anss = max(anss, ans[i][j]);
+                        } else {
+                                continue;
+                        }
+
+                        for (int k = 0; k < 4; k++) {
+                                int ni = i + dx[k];
+                                int nj = j + dy[k];
+
+                                if (ni >= 0 && nj >= 0 && ni < n && nj < m && !vis[ni][nj] && ans[ni][nj] == -1) {
+                                        q.push({ni, nj, dis + 1});
+                                        vis[ni][nj] = 1;
+                                }
+                        }
+                }
+
+
+                return (anss == 0 ? -1 : anss);
+
+
+        }
 };
